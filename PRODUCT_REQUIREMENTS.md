@@ -59,3 +59,5 @@ Maybe teacher can download a pdf file with user info
  - title
  - message
 
+###Teacher/Administration
+Is subclasses of the AbstractUser
