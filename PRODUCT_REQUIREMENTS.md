@@ -15,9 +15,11 @@ Teachers use the system when working online and ought to manage students’ info
 
 ###Requirements
 Backend: Python Django
+
 Frontend: Django Templates, Bootstrap
 
 Roles: Teacher/Administration
+
 Entries: Classes/Students/Schools/Notes
 
 ###Functionality
