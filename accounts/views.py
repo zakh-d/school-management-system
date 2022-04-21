@@ -1,24 +1,37 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse, reverse_lazy
+from django.utils.encoding import force_str
 from django.views import generic
+from django.utils.http import urlsafe_base64_decode
 from accounts.forms import TeacherCreationForm, SchoolAdminCreationForm, LoginForm
 from accounts.models import CustomUser
+from accounts.utils import send_activation_email, generate_token
 from config.settings import LOGIN_REDIRECT_URL
 
 
-class TeacherSignUpView(generic.CreateView):
+class CustomUserSignUpView(generic.CreateView):
 
     model = CustomUser
+    template_name = "registration/signup.html"
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        """Send email after account created"""
+        response = super(CustomUserSignUpView, self).form_valid(form)
+        send_activation_email(self.object, self.request)
+        return response
+
+
+class TeacherSignUpView(CustomUserSignUpView):
+
     form_class = TeacherCreationForm
-    template_name = "registration/signup.html"
 
 
-class SchoolAdminSignUpView(generic.CreateView):
+class SchoolAdminSignUpView(CustomUserSignUpView):
 
-    model = CustomUser
     form_class = SchoolAdminCreationForm
-    template_name = "registration/signup.html"
 
 
 class ProfileView(LoginRequiredMixin, generic.TemplateView):
@@ -46,3 +59,20 @@ def login_view(request):
                 return redirect(LOGIN_REDIRECT_URL)
             return render(request, 'registration/login.html', {'form': form, 'error': True})
     return render(request, 'registration/login.html', {'form': form})
+
+
+def verify_email(request, uid64, token):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uid64))
+        user = CustomUser.objects.get(pk=uid)
+    except CustomUser.DoesNotExist:
+        user = None
+    if request.method == "POST":
+        send_activation_email(user, request)
+        return render(request, 'New verification has been sent')
+    if user and generate_token.check_token(user, token):
+        user.email_verified = True
+        user.save()
+        return redirect(reverse('login'))
+    return render(request, "registration/invalid_verification_token.html")

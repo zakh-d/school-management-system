@@ -135,3 +135,6 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 AUTHENTICATION_BACKENDS = ['accounts.backends.CustomUserModelBackend']
 LOGIN_REDIRECT_URL = reverse_lazy('profile')
 LOGOUT_REDIRECT_URL = reverse_lazy('login')
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <h1>Invalid verification token</h1>
+        <hr>
+        <p>You can request new verification if needed</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Request New</button>
+        </form>
+    </div>
+
+{% endblock %}
