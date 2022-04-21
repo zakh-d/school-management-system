@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_str
@@ -69,8 +70,11 @@ def verify_email(request, uid64, token):
     except CustomUser.DoesNotExist:
         user = None
     if request.method == "POST":
-        send_activation_email(user, request)
-        return render(request, 'New verification has been sent')
+
+        if not user.email_verified:
+            send_activation_email(user, request)
+            return render(request, 'New verification has been sent')
+        return HttpResponse("Already Verified", status=418)
     if user and generate_token.check_token(user, token):
         user.email_verified = True
         user.save()
