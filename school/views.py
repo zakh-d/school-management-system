@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView
 
 from school.forms import CreateSchoolForm
 from school.models import School
@@ -7,11 +6,6 @@ from school.models import School
 
 def school_list(request):
     return render(request, 'school_list.html', {'list': School.objects.all()})
-
-
-class CreateSchool(CreateView):
-    model = School
-    fields = ['name']
 
 
 def school_create(request):
@@ -48,11 +42,11 @@ def school_delete(request, pk):
 
     school = School.objects.get(id=pk)
 
-    if request.method == "DELETE":
+    if request.method == "POST":
         school.delete()
-        return redirect('')
+        return redirect('school-list')
 
-    return render(request, 'school_delete')
+    return render(request, 'school_delete.html', {'item': school})
 
 
 
