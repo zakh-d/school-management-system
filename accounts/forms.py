@@ -47,3 +47,9 @@ class SchoolAdminCreationForm(UserCreationForm):
         if commit:
             school_admin.save()
         return school_admin
+
+
+class LoginForm(forms.Form):
+
+    username_or_email = forms.CharField(max_length=255)
+    password = forms.CharField(max_length=255, widget=forms.PasswordInput)

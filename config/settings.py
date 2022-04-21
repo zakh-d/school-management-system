@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.urls import reverse_lazy
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -131,3 +133,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Authentication
 AUTH_USER_MODEL = "accounts.CustomUser"
 AUTHENTICATION_BACKENDS = ['accounts.backends.CustomUserModelBackend']
+LOGIN_REDIRECT_URL = reverse_lazy('profile')
+LOGOUT_REDIRECT_URL = reverse_lazy('login')
