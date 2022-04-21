@@ -6,9 +6,9 @@
 </head>
 <body>
 <a href="{% url 'school-create' %}">Create</a>
-<a href="{% url 'school-update' item.id %}">update</a>
+
 {% for item in list %}
-<ul>{{ item }}</ul>
+<ul>{{ item }} <a href="{% url 'school-update' item.id %}">update</a></ul>
 {% endfor %}
 
 </body>

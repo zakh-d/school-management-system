@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.views.generic import CreateView
 
 from school.forms import CreateSchoolForm
 from school.models import School
@@ -6,6 +7,11 @@ from school.models import School
 
 def school_list(request):
     return render(request, 'school_list.html', {'list': School.objects.all()})
+
+
+class CreateSchool(CreateView):
+    model = School
+    fields = ['name']
 
 
 def school_create(request):
@@ -20,6 +26,7 @@ def school_create(request):
 
     context = {'form': form}
     return render(request, 'school_create.html', context)
+
 
 
 def school_update(request, pk):
