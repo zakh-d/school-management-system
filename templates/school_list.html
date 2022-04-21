@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="{% url 'school-create' %}">Create</a>
+<a href="{% url 'school-update' item.id %}">update</a>
+{% for item in list %}
+<ul>{{ item }}</ul>
+{% endfor %}
+
+</body>
+</html>
