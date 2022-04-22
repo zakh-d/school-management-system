@@ -1,12 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+from accounts.models import CustomUser
 from school.models import School
-
-
-def school_list(request):
-    return render(request, 'school/list.html', {'list': School.objects.all()})
 
 
 class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -18,7 +14,7 @@ class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def has_permission(self):
         user = self.request.user
-        return user.role == 1 and user.school is None
+        return user.role == CustomUser.Roles.ADMIN_MEMBER and user.school is None
 
     def form_valid(self, form):
         response = super(CreateSchoolView, self).form_valid(form)
@@ -35,4 +31,4 @@ class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     login_url = reverse_lazy('login')
 
     def has_permission(self):
-        return self.request.user.school == self.get_object() and self.request.user.role == 1
+        return self.request.user.school == self.get_object() and self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
