@@ -9,6 +9,9 @@ class School(models.Model):
          editable=False)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Class(models.Model):
     id = models.UUIDField(
