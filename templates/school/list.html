@@ -7,9 +7,11 @@
 <body>
 <a href="{% url 'school-create' %}">Create</a>
 
-{% for item in list %}
-<ul>{{ item }} <a href="{% url 'school-update' item.id %}">update</a>, <a href="{% url 'school-delete' item.id %}">Delete</a></ul>
-{% endfor %}
+<ul>
+    {% for item in list %}
+    <li>{{ item }} <a href="{% url 'school-update' item.id %}">update</a></li>
+    {% endfor %}
+</ul>
 
 </body>
 </html>

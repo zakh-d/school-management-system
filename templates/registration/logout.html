@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <form method="POST" class="col-10 offset-1 col-md-6 offset-md-3">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <button class="btn btn-primary" type="submit">Sign Up</button>
+
+    </form>
+
+{% endblock %}

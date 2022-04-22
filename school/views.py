@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect
-from school.forms import CreateSchoolForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
 from school.models import School
 
 
@@ -7,38 +9,30 @@ def school_list(request):
     return render(request, 'school/list.html', {'list': School.objects.all()})
 
 
-def school_create(request):
-    form = CreateSchoolForm
+class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = School
+    fields = ['name']
+    template_name = 'school/create.html'
+    success_url = reverse_lazy('school-list')
+    login_url = reverse_lazy('login')
 
-    if request.method == 'POST':
-        form = CreateSchoolForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
+    def has_permission(self):
+        user = self.request.user
+        return user.role == 1 and user.school is None
 
-    context = {'form': form}
-    return render(request, 'school/create.html', context)
-
-
-def school_update(request, pk):
-    school = School.objects.get(id=pk)
-    form = CreateSchoolForm(instance=school)
-
-    if request.method == 'POST':
-        form = CreateSchoolForm(request.POST, instance=school)
-        if form.is_valid():
-            form.save()
-            return redirect('school-list')
-
-    context = {'form': form}
-    return render(request, 'school/update.html', context)
+    def form_valid(self, form):
+        response = super(CreateSchoolView, self).form_valid(form)
+        self.request.user.school = self.object
+        self.request.user.save()
+        return response
 
 
-def school_delete(request, pk):
-    school = School.objects.get(id=pk)
+class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = School
+    fields = ['name']
+    template_name = 'school/update.html'
+    success_url = reverse_lazy('school-list')
+    login_url = reverse_lazy('login')
 
-    if request.method == "POST":
-        school.delete()
-        return redirect('school-list')
-
-    return render(request, 'school/delete.html', {'item': school})
+    def has_permission(self):
+        return self.request.user.school == self.get_object() and self.request.user.role == 1

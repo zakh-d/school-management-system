@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <form method="POST" class="col-10 offset-1 col-md-6 offset-md-3">
+        {% csrf_token %}
+
+        {% for field in form %}
+
+            <div class="mb-2">
+                {% render_field field.label_tag %}
+                {% render_field field class="form-control" %}
+            </div>
+        {% endfor %}
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <p class="text-center">Incorrect credentials were provided</p>
+            </div>
+        {% endif %}
+
+        <button class="btn btn-primary" type="submit">Login</button>
+
+    </form>
+
+{% endblock %}

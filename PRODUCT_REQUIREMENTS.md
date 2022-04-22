@@ -1,19 +1,19 @@
-#Product requirements document
+# Product requirements document
 
 ---
 
-##School Management System
+## School Management System
 
-###Author
+### Author
 Danylo Zakharchenko
 
-###Purpose
+### Purpose
 The application is supposed to help teacher manage students’ information. As well the system is not a E-Diary or any other e-marking system.
 
-###Use cases
+### Use cases
 Teachers use the system when working online and ought to manage students’ information remotely and independently
 
-###Requirements
+### Requirements
 Backend: Python Django
 
 Frontend: Django Templates, Bootstrap
@@ -22,7 +22,7 @@ Roles: Teacher/Administration
 
 Entries: Classes/Students/Schools/Notes
 
-###Functionality
+### Functionality
 Admin(not Django one) can register school 
 
 To register teacher is need to provide unique school id(UUID maybe)
@@ -33,20 +33,20 @@ Teacher can write note about a student
 
 Maybe teacher can download a pdf file with user info
 
-##Model Description
+## Model Description
 
-###School
+### School
  
 - id
 - name
 
-###Class
+### Class
 
  - id
  - name - max 4 chars (e.g. 11-A )
  - school
 
-###Student
+### Student
  - id
  - name
  - surname
@@ -55,11 +55,11 @@ Maybe teacher can download a pdf file with user info
  - email (Optional)
  - phone (Optional)
 
-###Note
+### Note
  - id
  - student
  - title
  - message
 
-###Teacher/Administration
+### Teacher/Administration
 Is subclasses of the AbstractUser
