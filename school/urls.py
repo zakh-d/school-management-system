@@ -7,5 +7,8 @@ urlpatterns = [
     path('create/', views.school_create, name='school-create'),
     path('update/<uuid:pk>/', views.school_update, name='school-update'),
     path('delete/<uuid:pk>/', views.school_delete, name='school-delete'),
+<<<<<<< HEAD
 
+=======
+>>>>>>> crud-school-fix
 ]

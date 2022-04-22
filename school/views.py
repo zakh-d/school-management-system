@@ -24,11 +24,10 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
 
 def school_list(request):
-    return render(request, 'school_list.html', {'list': School.objects.all()})
+    return render(request, 'school/list.html', {'list': School.objects.all()})
 
 
 def school_create(request):
-
     form = CreateSchoolForm
 
     if request.method == 'POST':
@@ -38,11 +37,10 @@ def school_create(request):
             return redirect('/')
 
     context = {'form': form}
-    return render(request, 'school_create.html', context)
+    return render(request, 'school/create.html', context)
 
 
 def school_update(request, pk):
-
     school = School.objects.get(id=pk)
     form = CreateSchoolForm(instance=school)
 
@@ -53,15 +51,14 @@ def school_update(request, pk):
             return redirect('school-list')
 
     context = {'form': form}
-    return render(request, 'school_update.html', context)
+    return render(request, 'school/update.html', context)
 
 
 def school_delete(request, pk):
-
     school = School.objects.get(id=pk)
 
     if request.method == "POST":
         school.delete()
         return redirect('school-list')
 
-    return render(request, 'school_delete.html', {'item': school})
+    return render(request, 'school/delete.html', {'item': school})
