@@ -2,8 +2,8 @@ from django.urls import path
 from school import views
 
 urlpatterns = [
-    path('', views.school_list, name='school-list'),
-    path('create/', views.school_create, name='school-create'),
-    path('update/<uuid:pk>/', views.school_update, name='school-update'),
-    path('delete/<uuid:pk>/', views.school_delete, name='school-delete'),
+    path('create/', views.CreateSchoolView.as_view(), name='school-create'),
+    path('update/<uuid:pk>/', views.UpdateSchoolView.as_view(), name='school-update'),
+    path('class/create/', views.ClassCreateView.as_view(), name="class_create"),
+    path('class/<uuid:pk>/', views.ClassDetailView.as_view(), name="class_detail")
 ]

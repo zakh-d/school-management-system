@@ -1,64 +1,64 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView, DetailView
+from accounts.models import CustomUser
+from school.forms import CreateUpdateClassForm
 from school.models import Class
-from school.forms import CreateSchoolForm
 from school.models import School
 
 
-class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+# School Views
 
+class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = School
+    fields = ['name']
+    template_name = 'school/create.html'
+    success_url = reverse_lazy('profile')
+    login_url = reverse_lazy('login')
+
+    def has_permission(self):
+        user = self.request.user
+        return user.role == CustomUser.Roles.ADMIN_MEMBER and user.school is None
+
+    def form_valid(self, form):
+        response = super(CreateSchoolView, self).form_valid(form)
+        self.request.user.school = self.object
+        self.request.user.save()
+        return response
+
+
+class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = School
+    fields = ['name']
+    template_name = 'school/update.html'
+    success_url = reverse_lazy('school-list')
+    login_url = reverse_lazy('login')
+
+    def has_permission(self):
+        return self.request.user.school == self.get_object() and self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
+
+
+# Class View
+
+class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Class
     login_url = reverse_lazy('login')
-    fields = ('name',)
+    template_name = "class/create.html"
 
     def has_permission(self):
         """Checking whether user belongs to any school. No matter user is teacher or admin"""
         return self.request.user.school is not None
 
-    def form_valid(self, form):
-
-        form.instance.school = self.request.user.school
-        super(ClassCreateView, self).form_valid(form)
+    def get_form(self, *args, **kwargs):
+        return CreateUpdateClassForm(self.request.user, *args, **kwargs)
 
 
-def school_list(request):
-    return render(request, 'school/list.html', {'list': School.objects.all()})
+class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
+    model = Class
+    login_url = reverse_lazy('login')
+    template_name = 'class/detail.html'
+    context_object_name = "class"
 
-def school_create(request):
-    form = CreateSchoolForm
-
-    if request.method == 'POST':
-        form = CreateSchoolForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-
-    context = {'form': form}
-    return render(request, 'school/create.html', context)
-
-
-def school_update(request, pk):
-    school = School.objects.get(id=pk)
-    form = CreateSchoolForm(instance=school)
-
-    if request.method == 'POST':
-        form = CreateSchoolForm(request.POST, instance=school)
-        if form.is_valid():
-            form.save()
-            return redirect('school-list')
-
-    context = {'form': form}
-    return render(request, 'school/update.html', context)
-
-
-def school_delete(request, pk):
-    school = School.objects.get(id=pk)
-
-    if request.method == "POST":
-        school.delete()
-        return redirect('school-list')
-
-    return render(request, 'school/delete.html', {'item': school})
+    def has_permission(self):
+        return self.get_object().school == self.request.user.school

@@ -3,10 +3,14 @@
 {% block content %}
 <div class="container">
     <form class="col-6 offset-3" method="POST" enctype="multipart/form-data">
+    <h1>New Class</h1>
     {% csrf_token %}
     <div class="my-3">
         {{ form.name.label_tag }}
         {% render_field form.name class="form-control" %}
+        {% if form.errors %}
+            Class already created
+        {% endif %}
     </div>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
