@@ -1,14 +1,21 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 
 from accounts.models import AdministrationMember, Teacher
 from school.models import School
 
 
+"""
+    Forms uses Teacher and AdministrationMember models cause they override save method in it and set right role, so 
+    no further actions to set role is needn't
+"""
+
+
 class TeacherCreationForm(UserCreationForm):
 
-    school_id = forms.UUIDField(label="School ID")
+    school_id = forms.UUIDField(label='School ID')
 
     class Meta:
         model = Teacher
@@ -19,7 +26,7 @@ class TeacherCreationForm(UserCreationForm):
         try:
             School.objects.get(pk=self.cleaned_data.get('school_id'))
         except School.DoesNotExist:
-            raise ValidationError("School with given id does not exist")
+            raise ValidationError('School with given id does not exist')
         return self.cleaned_data.get('school_id')
 
     def save(self, commit=True):
@@ -32,11 +39,25 @@ class TeacherCreationForm(UserCreationForm):
         return teacher
 
 
-class CustomUserCreationForm(UserCreationForm):
+class SchoolAdminCreationForm(UserCreationForm):
 
     class Meta:
         model = AdministrationMember
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+
+class CustomUserCreationForm(UserCreationForm):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('first_name', 'last_name', 'username', 'email')
 
 
 class LoginForm(forms.Form):

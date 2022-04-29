@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_str
 from django.views import generic
 from django.utils.http import urlsafe_base64_decode
-from accounts.forms import TeacherCreationForm, CustomUserCreationForm as SchoolAdminCreationForm, LoginForm
+from accounts.forms import TeacherCreationForm, SchoolAdminCreationForm, LoginForm
 from accounts.models import CustomUser
 from accounts.utils import send_activation_email, generate_token
 from config.settings import LOGIN_REDIRECT_URL
