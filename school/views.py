@@ -74,5 +74,10 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     context_object_name = "class"
 
     def has_permission(self):
-        # TODO: change so that only allowed teachers or admin could see
-        return self.get_object().school == self.request.user.school
+        """Can access if user in Class.teachers or it is admin and Class.school==user.school"""
+        if self.request.user in self.get_object().teachers.all():
+            return True
+        if self.request.user.role == CustomUser.Roles.ADMIN_MEMBER and \
+                self.get_object().school == self.request.user.school:
+            return True
+        return False
