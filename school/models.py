@@ -21,7 +21,7 @@ class Class(models.Model):
          default=uuid.uuid4,
          editable=False)
     name = models.CharField(max_length=4)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='classes')
     teachers = models.ManyToManyField("accounts.CustomUser", related_name="classes")
 
     class Meta:
@@ -34,4 +34,3 @@ class Class(models.Model):
     def get_absolute_url(self):
 
         return reverse('class_detail', kwargs={"pk": self.id})
-
