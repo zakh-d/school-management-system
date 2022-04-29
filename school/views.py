@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
+from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 from accounts.models import CustomUser
 from school.forms import CreateUpdateClassForm
 from school.models import Class
@@ -38,10 +38,23 @@ class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return self.request.user.school == self.get_object() and self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
 
 
-class DashboardView(LoginRequiredMixin, ListView):
-    model = School
+class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'school/dashboard.html'
     login_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+        context['is_admin'] = self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
+        if self.request.user.school is None:
+            context['school'] = None
+            return context
+
+        context['school'] = self.request.user.school
+        if self.request.user.role == CustomUser.Roles.ADMIN_MEMBER:
+            context['classes'] = self.request.user.school.classes.all()
+        if self.request.user.role == CustomUser.Roles.TEACHER:
+            context['classes'] = self.request.user.classes.all()
+        return context
 
 
 # Class View
