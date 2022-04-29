@@ -12,7 +12,9 @@ class CustomUser(AbstractUser):
 
     email_verified = models.BooleanField(default=False)
     role = models.IntegerField(choices=Roles.choices, default=0)
-    school = models.ForeignKey(School, on_delete=models.DO_NOTHING, null=True)
+    school = models.ForeignKey(School, on_delete=models.SET_NULL,
+                               null=True,
+                               blank=True)
 
 
 class TeacherManager(models.Manager):
