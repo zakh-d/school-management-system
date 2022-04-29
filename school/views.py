@@ -44,13 +44,24 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Class
     login_url = reverse_lazy('login')
     template_name = "class/create.html"
+    form_class = CreateUpdateClassForm
 
     def has_permission(self):
         """Checking whether user belongs to any school. No matter user is teacher or admin"""
         return self.request.user.school is not None
 
-    def get_form(self, *args, **kwargs):
-        return CreateUpdateClassForm(self.request.user, *args, **kwargs)
+    def get_form_kwargs(self):
+        kwargs = super(ClassCreateView, self).get_form_kwargs()
+        kwargs['school'] = self.request.user.school
+        return kwargs
+
+    def form_valid(self, form):
+        new_class = form.save(commit=False)
+        new_class.school = self.request.user.school
+        if self.request.user.role == CustomUser.Roles.TEACHER:
+            new_class.teachers.add(self.request.user)
+        new_class.save()
+        return super(ClassCreateView, self).form_valid(form)
 
 
 class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -61,4 +72,5 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     context_object_name = "class"
 
     def has_permission(self):
+        # TODO: change so that only allowed teachers or admin could see
         return self.get_object().school == self.request.user.school

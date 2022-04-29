@@ -8,9 +8,10 @@
     <div class="my-3">
         {{ form.name.label_tag }}
         {% render_field form.name class="form-control" %}
-        {% if form.errors %}
-            Class already created
+        {% if form.errors.name %}
+            {{ form.errors.name }}
         {% endif %}
+
     </div>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
