@@ -33,4 +33,4 @@ class Class(models.Model):
 
     def get_absolute_url(self):
 
-        return reverse('class_detail', kwargs={"pk": self.id})
+        return reverse('school:class_detail', kwargs={"pk": self.id})
