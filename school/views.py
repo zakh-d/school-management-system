@@ -10,6 +10,8 @@ from school.models import School
 
 
 # School Views
+from school.permissions import admin_required
+
 
 class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = School
@@ -105,10 +107,12 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ClassDetailView, self).get_context_data(**kwargs)
+        context['is_admin'] = self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
         context['add_teacher_form'] = AddTeacherClassForm(school=self.get_object().school, instance=self.get_object())
         return context
 
 
+@admin_required(login_url=reverse_lazy('login'))
 def class_add_teacher_handler(request, id):
     """Handles only POST method"""
     if request.method != "POST":
