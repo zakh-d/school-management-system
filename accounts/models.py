@@ -31,6 +31,8 @@ class AdminMemberManager(models.Manager):
 
 class Teacher(CustomUser):
 
+    objects = TeacherManager()
+
     def save(self, *args, **kwargs):
         """Setting teacher role to model on create"""
         if not self.pk:
@@ -43,6 +45,8 @@ class Teacher(CustomUser):
 
 
 class AdministrationMember(CustomUser):
+
+    objects = AdminMemberManager()
 
     def save(self, *args, **kwargs):
         """Setting admin-member role to model on create"""

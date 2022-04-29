@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.urls import reverse_lazy
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 from accounts.models import CustomUser
-from school.forms import CreateUpdateClassForm
+from school.forms import CreateUpdateClassForm, AddTeacherClassForm
 from school.models import Class
 from school.models import School
 
@@ -100,3 +102,20 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
                 self.get_object().school == self.request.user.school:
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super(ClassDetailView, self).get_context_data(**kwargs)
+        context['add_teacher_form'] = AddTeacherClassForm(school=self.get_object().school, instance=self.get_object())
+        return context
+
+
+def class_add_teacher_handler(request, id):
+    """Handles only POST method"""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    _class = Class.objects.get(id=id)
+    form = AddTeacherClassForm(_class.school, request.POST, instance=_class)
+    if form.is_valid():
+        form.save()
+    return redirect(reverse('school:class_detail', kwargs={'pk': id}))
+

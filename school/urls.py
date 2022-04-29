@@ -9,4 +9,5 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('class/create/', views.ClassCreateView.as_view(), name="class_create"),
     path('class/<uuid:pk>/', views.ClassDetailView.as_view(), name="class_detail"),
+    path('class/add-teacher-not-public/<uuid:id>/', views.class_add_teacher_handler, name="add_teacher"),
 ]

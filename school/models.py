@@ -22,7 +22,7 @@ class Class(models.Model):
          editable=False)
     name = models.CharField(max_length=4)
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='classes')
-    teachers = models.ManyToManyField("accounts.CustomUser", related_name="classes")
+    teachers = models.ManyToManyField("accounts.CustomUser", related_name="classes", blank=True)
 
     class Meta:
         unique_together = ("school", "name")
