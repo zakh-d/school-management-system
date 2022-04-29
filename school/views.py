@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView, TemplateView
+from django.views.generic import CreateView, UpdateView, ListView
 from accounts.models import CustomUser
 from school.models import School
 
