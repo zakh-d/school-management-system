@@ -45,6 +45,7 @@ Maybe teacher can download a pdf file with user info
  - id
  - name - max 4 chars (e.g. 11-A )
  - school
+ - teacher (those who have access to the class)
 
 ### Student
  - id
