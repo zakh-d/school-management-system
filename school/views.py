@@ -56,11 +56,13 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
+        """Adding school to newly created class and adding teacher if teacher creates class"""
         new_class = form.save(commit=False)
         new_class.school = self.request.user.school
-        if self.request.user.role == CustomUser.Roles.TEACHER:
-            new_class.teachers.add(self.request.user)
         new_class.save()
+        if self.request.user.role == CustomUser.Roles.TEACHER:
+            print(type(self.request.user))
+            new_class.add_teachers(self.request.user)
         return super(ClassCreateView, self).form_valid(form)
 
 
