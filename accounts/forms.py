@@ -32,7 +32,7 @@ class TeacherCreationForm(UserCreationForm):
         return teacher
 
 
-class SchoolAdminCreationForm(UserCreationForm):
+class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = AdministrationMember
