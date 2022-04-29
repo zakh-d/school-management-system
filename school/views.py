@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 from accounts.models import CustomUser
 from school.forms import CreateUpdateClassForm, AddTeacherClassForm
@@ -112,14 +113,25 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         return context
 
 
+@require_http_methods(['POST'])
 @admin_required(login_url=reverse_lazy('login'))
 def class_add_teacher_handler(request, id):
-    """Handles only POST method"""
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
-    _class = Class.objects.get(id=id)
+    _class = Class.get_by_id(id)
+    if not _class:
+        return Http404()
     form = AddTeacherClassForm(_class.school, request.POST, instance=_class)
     if form.is_valid():
         form.save()
     return redirect(reverse('school:class_detail', kwargs={'pk': id}))
 
+
+@require_http_methods(['POST'])
+@admin_required(login_url=reverse_lazy('login'))
+def increase_classes_number_handler(request, school_id):
+    school = School.get_by_id(school_id)
+    if not school:
+        return Http404
+    classes = school.classes.all().order_by("-name")
+    for _class in classes:
+        _class.increase_class_number()
+    return redirect(reverse('school:dashboard'))

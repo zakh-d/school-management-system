@@ -16,7 +16,11 @@
         {% endif %}
         {% endif %}
         {% if is_admin %}
-        <a class="btn btn-primary btn-lg float-end" href="{% url 'school:update' school.id %}">Update</a>
+        <a class="btn btn-primary float-end" href="{% url 'school:update' school.id %}">Update</a>
+        <form action="{% url 'school:increase_class' school.id %}" class="float-end" method="POST">
+        {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary">New School Year</button>
+        </form>
         {% endif %}
     </div>
 </div>
