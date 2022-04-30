@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse, resolve
 
 from accounts.forms import SchoolAdminCreationForm, TeacherCreationForm, LoginForm
+from accounts.models import Teacher, AdministrationMember, CustomUser
 from accounts.views import SchoolAdminSignUpView, TeacherSignUpView, login_view
 
 
@@ -17,7 +18,6 @@ class CustomUsersTests(TestCase):
         )
         self.assertEqual(user.username, 'test_user')
         self.assertEqual(user.email, 'test@mail.com')
-        self.assertEqual(user.role, User.Roles.TEACHER)
         self.assertFalse(user.email_verified)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
@@ -36,6 +36,72 @@ class CustomUsersTests(TestCase):
         self.assertTrue(admin.is_active)
         self.assertTrue(admin.is_staff)
         self.assertTrue(admin.is_superuser)
+
+    def test_custom_user_str(self):
+        User = get_user_model()
+        user = User.objects.create(
+            username='test_user',
+            email='test@mail.com',
+            password='testpass123',
+            first_name="John",
+            last_name="Adams"
+        )
+        self.assertEqual(str(user), "John Adams")
+
+
+class TeacherTests(TestCase):
+
+    def setUp(self):
+        self.teacher = Teacher(
+            username="test",
+            email="test@mail.com",
+            password="testpass123",
+            first_name="Name",
+            last_name="Surname"
+        )
+        self.teacher.save()
+        AdministrationMember.objects.create(
+            username="test1",
+            email="test1@mail.com",
+            password="testpass123",
+            first_name="Name",
+            last_name="Surname"
+        )
+
+    def test_teacher_save(self):
+        self.assertEqual(self.teacher.role, CustomUser.Roles.TEACHER)
+
+    def test_teacher_queryset(self):
+        results_count = Teacher.objects.all().count()
+        self.assertEqual(results_count, 1)
+
+
+class AdministrationMemberTests(TestCase):
+
+    def setUp(self) -> None:
+        self.school_admin = AdministrationMember(
+            username="test",
+            email="test@mail.com",
+            password="testpass123",
+            first_name="Name",
+            last_name="Surname"
+        )
+        self.school_admin.save()
+        Teacher.objects.create(
+            username="test1",
+            email="test1@mail.com",
+            password="testpass123",
+            first_name="Name",
+            last_name="Surname"
+
+        )
+
+    def test_school_admin_save(self):
+        self.assertEqual(self.school_admin.role, CustomUser.Roles.ADMIN_MEMBER)
+
+    def test_school_admin_queryset(self):
+        results_count = AdministrationMember.objects.all().count()
+        self.assertEqual(results_count, 1)
 
 
 class SignUpPageTests(TestCase):
