@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseNotAllowed, Http404
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_http_methods
@@ -40,7 +40,8 @@ class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     login_url = reverse_lazy('login')
 
     def has_permission(self):
-        return self.request.user.school == self.get_object() and self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
+        return self.request.user.school == self.get_object() \
+               and self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

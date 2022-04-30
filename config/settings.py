@@ -138,9 +138,3 @@ LOGOUT_REDIRECT_URL = reverse_lazy('login')
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass
