@@ -1,38 +1,44 @@
 {% extends '_base.html' %}
 {% block content %}
-<div class="p-3 mb-4 rounded-3">
-    <div>
-        {{ user.first_name }} {{ user.last_name }} | {{ user.get_role_display }}
+    <div class="p-3 mb-4 rounded-3">
+        <div>
+            {{ user.first_name }} {{ user.last_name }} | {{ user.get_role_display }}
+        </div>
     </div>
-</div>
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5">
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
 
-        {% if school %}
-        <h1 class="display-5 fw-bold float-start">{{ school.name }}</h1>
-        {% else %}
-        {% if is_admin %}
-        <h1><a href="{% url 'school:create' %}">Add your school</a></h1>
-        {% endif %}
-        {% endif %}
-        {% if is_admin %}
-        <a class="btn btn-primary float-end" href="{% url 'school:update' school.id %}">Update</a>
-        <form action="{% url 'school:increase_class' school.id %}" class="float-end" method="POST">
-        {% csrf_token %}
-            <button type="submit" class="btn btn-outline-primary">New School Year</button>
-        </form>
-        {% endif %}
+            {% if school %}
+                <h1 class="display-5 fw-bold float-start">{{ school.name }}</h1>
+            {% else %}
+                {% if is_admin %}
+                    <h1><a href="{% url 'school:create' %}">Add your school</a></h1>
+                {% endif %}
+            {% endif %}
+            {% if is_admin %}
+                <form action="{% url 'school:increase_class' school.id %}" class="float-end" method="POST">
+                    {% csrf_token %}
+                    <div class="btn-group">
+                        <a class="btn btn-primary float-end" href="{% url 'school:update' school.id %}">Update</a>
+                        {# TODO: give sensible name to button below #}
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
+                                data-bs-placement="top" title="Increase each class name by 1">+ Classes</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
     </div>
-</div>
-<div class="row mx-2">
-    <div class="list-group list-group-flush col-5">
-    {% for class in classes %}
-        <a href="{{ class.get_absolute_url }}" class="list-group-item list-group-item-action">{{ class.name }}</a>
-        {% empty %}
-        <li class="list-group-item">No classes available</li>
-        <a href="{% url 'school:class_create' %}" class="list-group-item list-group-item-action active">Create class</a>
-    {% endfor %}
-</div>
-</div>
+    <div class="row mx-2">
+        <div class="list-group list-group-flush col-5">
+            {% for class in classes %}
+                <a href="{{ class.get_absolute_url }}"
+                   class="list-group-item list-group-item-action">{{ class.name }}</a>
+            {% empty %}
+                <li class="list-group-item">No classes available</li>
+                <a href="{% url 'school:class_create' %}" class="list-group-item list-group-item-action active">Create
+                    class</a>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}
