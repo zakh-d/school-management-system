@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # local apps
     'school',
     'accounts',
+    'student',
     # 3rd party apps
     'widget_tweaks',
 ]
