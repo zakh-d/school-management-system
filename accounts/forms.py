@@ -7,12 +7,6 @@ from accounts.models import AdministrationMember, Teacher
 from school.models import School
 
 
-"""
-    Forms uses Teacher and AdministrationMember models cause they override save method in it and set right role, so 
-    no further actions to set role is needn't
-"""
-
-
 class TeacherCreationForm(UserCreationForm):
 
     school_id = forms.UUIDField(label='School ID')
@@ -35,7 +29,7 @@ class TeacherCreationForm(UserCreationForm):
         teacher.school = School.objects.get(pk=self.cleaned_data.get('school_id'))
 
         if commit:
-            teacher.save()
+            teacher.save()  # Teacher model sets role TEACHER
         return teacher
 
 
@@ -44,6 +38,7 @@ class SchoolAdminCreationForm(UserCreationForm):
     class Meta:
         model = AdministrationMember
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+        # AdministrationMember model sets role ADMIN_MEMBER on save
 
 
 class CustomUserCreationForm(UserCreationForm):
