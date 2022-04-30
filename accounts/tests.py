@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse, resolve
 
-from accounts.forms import SchoolAdminCreationForm, TeacherCreationForm
-from accounts.views import SchoolAdminSignUpView, TeacherSignUpView
+from accounts.forms import SchoolAdminCreationForm, TeacherCreationForm, LoginForm
+from accounts.views import SchoolAdminSignUpView, TeacherSignUpView, login_view
 
 
 class CustomUsersTests(TestCase):
@@ -78,4 +78,28 @@ class SignUpPageTests(TestCase):
         self.assertEqual(
             view.func.__name__,
             TeacherSignUpView.as_view().__name__
+        )
+
+
+class LoginPageTests(TestCase):
+
+    def setUp(self):
+        url = reverse('login')
+        self.response = self.client.get(url)
+
+    def test_login_template(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/login.html')
+        self.assertContains(self.response, 'Username or email:')
+
+    def test_login_form(self):
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, LoginForm)
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_login_view(self):
+        view = resolve('/accounts/login/')
+        self.assertEqual(
+            view.func.__name__,
+            login_view.__name__
         )
