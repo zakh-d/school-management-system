@@ -7,14 +7,17 @@ class CustomUser(AbstractUser):
 
     class Roles(models.IntegerChoices):
 
-        TEACHER = 0, "Teacher"
-        ADMIN_MEMBER = 1, "Administration Member"
+        TEACHER = 0, 'Teacher'
+        ADMIN_MEMBER = 1, 'Administration Member'
 
     email_verified = models.BooleanField(default=False)
     role = models.IntegerField(choices=Roles.choices, default=0)
     school = models.ForeignKey(School, on_delete=models.SET_NULL,
                                null=True,
                                blank=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class TeacherManager(models.Manager):
@@ -31,6 +34,8 @@ class AdminMemberManager(models.Manager):
 
 class Teacher(CustomUser):
 
+    objects = TeacherManager()
+
     def save(self, *args, **kwargs):
         """Setting teacher role to model on create"""
         if not self.pk:
@@ -43,6 +48,8 @@ class Teacher(CustomUser):
 
 
 class AdministrationMember(CustomUser):
+
+    objects = AdminMemberManager()
 
     def save(self, *args, **kwargs):
         """Setting admin-member role to model on create"""
