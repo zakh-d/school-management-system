@@ -181,7 +181,7 @@ class SignUpPageTests(TestCase):
 
     def test_email_sent_after_signup(self):
         url = reverse('sign_up_admin')
-        response = self.client.post(url, data={
+        self.client.post(url, data={
             'first_name': 'Test',
             'last_name': 'Test',
             'username': 'test2',
