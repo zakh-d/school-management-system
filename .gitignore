@@ -139,3 +139,5 @@ GitHub.sublime-settings
 
 # local settings
 config/local_settings.py
+
+**/.DS_Store
