@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from school.models import School
 
@@ -20,13 +20,13 @@ class CustomUser(AbstractUser):
         return f'{self.first_name} {self.last_name}'
 
 
-class TeacherManager(models.Manager):
+class TeacherManager(UserManager):
 
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).filter(role=CustomUser.Roles.TEACHER)
 
 
-class AdminMemberManager(models.Manager):
+class AdminMemberManager(UserManager):
 
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).filter(role=CustomUser.Roles.ADMIN_MEMBER)

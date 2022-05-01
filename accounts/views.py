@@ -73,7 +73,7 @@ def verify_email(request, uid64, token):
 
         if not user.email_verified:
             send_activation_email(user, request)
-            return render(request, 'New verification has been sent')
+            return HttpResponse('New verification has been sent')
         return HttpResponse("Already Verified", status=418)
     if user and generate_token.check_token(user, token):
         user.email_verified = True

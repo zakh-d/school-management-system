@@ -1,10 +1,18 @@
+from django.conf.global_settings import LOGIN_REDIRECT_URL, LOGIN_URL
+from django.core import mail
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.test.client import RequestFactory
 from django.urls import reverse, resolve
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
+from accounts.backends import CustomUserModelBackend
 from accounts.forms import SchoolAdminCreationForm, TeacherCreationForm, LoginForm
 from accounts.models import Teacher, AdministrationMember, CustomUser
+from accounts.utils import generate_token, send_activation_email
 from accounts.views import SchoolAdminSignUpView, TeacherSignUpView, login_view
+from school.models import School
 
 
 class CustomUsersTests(TestCase):
@@ -43,30 +51,31 @@ class CustomUsersTests(TestCase):
             username='test_user',
             email='test@mail.com',
             password='testpass123',
-            first_name="John",
-            last_name="Adams"
+            first_name='John',
+            last_name='Adams'
         )
-        self.assertEqual(str(user), "John Adams")
+        self.assertEqual(str(user), 'John Adams')
 
 
 class TeacherTests(TestCase):
 
     def setUp(self):
         self.teacher = Teacher(
-            username="test",
-            email="test@mail.com",
-            password="testpass123",
-            first_name="Name",
-            last_name="Surname"
+            username='test',
+            email='test@mail.com',
+            password='testpass123',
+            first_name='Name',
+            last_name='Surname'
         )
         self.teacher.save()
         AdministrationMember.objects.create(
-            username="test1",
-            email="test1@mail.com",
-            password="testpass123",
-            first_name="Name",
-            last_name="Surname"
+            username='test1',
+            email='test1@mail.com',
+            password='testpass123',
+            first_name='Name',
+            last_name='Surname'
         )
+        self.school = School.objects.create(name='Test School')
 
     def test_teacher_save(self):
         self.assertEqual(self.teacher.role, CustomUser.Roles.TEACHER)
@@ -75,25 +84,50 @@ class TeacherTests(TestCase):
         results_count = Teacher.objects.all().count()
         self.assertEqual(results_count, 1)
 
+    def test_teacher_creation_form(self):
+        form = TeacherCreationForm(data={
+            'first_name': 'Test',
+            'last_name': 'Test',
+            'username': 'test2',
+            'email': 'test2@mail.com',
+            'password1': 'testpass123',
+            'password2': 'testpass123',
+            'school_id': self.school.id
+        })
+        self.assertEqual(len(form.errors), 0)
+        teacher = form.save()
+        self.assertEqual(teacher.school, self.school)
+
+    def test_teacher_creation_form_invalid_school_id(self):
+        form = TeacherCreationForm(data={
+            'first_name': 'Test',
+            'last_name': 'Test',
+            'username': 'test2',
+            'email': 'test2@mail.com',
+            'password1': 'testpass123',
+            'password2': 'testpass123',
+            'school_id': '550e8400-e29b-41d4-a716-446655440000'
+        })
+        self.assertEqual(form.errors['school_id'], ['School with given id does not exist'])
+
 
 class AdministrationMemberTests(TestCase):
 
     def setUp(self) -> None:
         self.school_admin = AdministrationMember(
-            username="test",
-            email="test@mail.com",
-            password="testpass123",
-            first_name="Name",
-            last_name="Surname"
+            username='test',
+            email='test@mail.com',
+            password='testpass123',
+            first_name='Name',
+            last_name='Surname'
         )
         self.school_admin.save()
         Teacher.objects.create(
-            username="test1",
-            email="test1@mail.com",
-            password="testpass123",
-            first_name="Name",
-            last_name="Surname"
-
+            username='test1',
+            email='test1@mail.com',
+            password='testpass123',
+            first_name='Name',
+            last_name='Surname'
         )
 
     def test_school_admin_save(self):
@@ -146,12 +180,30 @@ class SignUpPageTests(TestCase):
             TeacherSignUpView.as_view().__name__
         )
 
+    def test_email_sent_after_signup(self):
+        url = reverse('sign_up_admin')
+        response = self.client.post(url, data={
+            'first_name': 'Test',
+            'last_name': 'Test',
+            'username': 'test2',
+            'email': 'test2@mail.com',
+            'password1': 'testpass123',
+            'password2': 'testpass123',
+        })
+        self.assertEqual(len(mail.outbox), 1)
+
 
 class LoginPageTests(TestCase):
 
     def setUp(self):
         url = reverse('login')
         self.response = self.client.get(url)
+        user = CustomUser(
+            username="test",
+            email="mail@mail.com",
+        )
+        user.set_password('testpass123')
+        user.save()
 
     def test_login_template(self):
         self.assertEqual(self.response.status_code, 200)
@@ -169,3 +221,104 @@ class LoginPageTests(TestCase):
             view.func.__name__,
             login_view.__name__
         )
+
+    def test_login_success(self):
+        url = reverse('login')
+        response = self.client.post(url, data={
+            'username_or_email': 'test',
+            'password': 'testpass123'
+        })
+        self.assertRedirects(response, LOGIN_REDIRECT_URL)
+
+    def test_login_failed(self):
+        url = reverse('login')
+        response = self.client.post(url, data={
+            'username_or_email': 'test',
+            'password': 'incorrect'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('registration/login.html')
+        self.assertTrue(response.context.get('error'))
+        self.assertContains(response, 'Incorrect credentials were provided')
+
+
+class TokenGeneratorTests(TestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create(
+            username='test',
+            email='test@mail.com',
+            password='testpass123'
+        )
+        self.token = generate_token.make_token(self.user)
+
+    def test_token_valid(self):
+        self.assertTrue(generate_token.check_token(self.user, self.token))
+
+
+class EmailVerificationTests(TestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create(
+            username='test',
+            email='test@mail.com',
+            password='testpass123'
+        )
+
+    def test_email_sent(self):
+        factory = RequestFactory()
+        request = factory.get('/')
+        send_activation_email(self.user, request)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Verify Email')
+
+    def test_email_verification_template(self):
+        token = generate_token.make_token(self.user)
+        url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(self.user.pk)), 'token': token})
+        response = self.client.get(url)
+        self.assertRedirects(response, LOGIN_URL)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.email_verified)
+
+    def test_incorrect_token(self):
+        url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(4)), 'token': "incorrect-token"})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'registration/invalid_verification_token.html')
+
+    def test_resent_verification(self):
+        token = generate_token.make_token(self.user)
+        url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(self.user.pk)), 'token': token})
+        response = self.client.post(url)
+        self.assertContains(response, 'New verification has been sent')
+
+    def test_resent_verification_already_verified(self):
+        token = generate_token.make_token(self.user)
+        self.user.email_verified = True
+        self.user.save()
+        url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(self.user.pk)), 'token': token})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 418)
+
+
+class CustomUserBackendTests(TestCase):
+
+    def setUp(self):
+        self.user = CustomUser(
+            username="test",
+            email="test@mail.com",
+            email_verified=True
+        )
+        self.user.set_password('testpass123')
+        self.user.save()
+        self.authenticate = CustomUserModelBackend().authenticate
+
+    def test_custom_authenticate_with_username(self):
+        request = RequestFactory().get(reverse('login'))
+        user = self.authenticate(request, username="test", password='testpass123')
+        self.assertEqual(user.pk, self.user.pk)
+
+    def test_custom_authenticate_with_email(self):
+        request = RequestFactory().get(reverse('login'))
+        user = self.authenticate(request, username="test@mail.com", password='testpass123')
+        self.assertEqual(user.pk, self.user.pk)
+

@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.core.exceptions import ValidationError
 
 from accounts.models import AdministrationMember, Teacher
 from school.models import School
@@ -20,7 +19,7 @@ class TeacherCreationForm(UserCreationForm):
         try:
             School.objects.get(pk=self.cleaned_data.get('school_id'))
         except School.DoesNotExist:
-            raise ValidationError('School with given id does not exist')
+            self.add_error('school_id', 'School with given id does not exist')
         return self.cleaned_data.get('school_id')
 
     def save(self, commit=True):
