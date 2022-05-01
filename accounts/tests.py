@@ -1,13 +1,12 @@
 from django.conf.global_settings import LOGIN_REDIRECT_URL, LOGIN_URL
 from django.core import mail
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import reverse, resolve
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from accounts.backends import CustomUserModelBackend
 from accounts.forms import SchoolAdminCreationForm, TeacherCreationForm, LoginForm
 from accounts.models import Teacher, AdministrationMember, CustomUser
 from accounts.utils import generate_token, send_activation_email
@@ -310,15 +309,23 @@ class CustomUserBackendTests(TestCase):
         )
         self.user.set_password('testpass123')
         self.user.save()
-        self.authenticate = CustomUserModelBackend().authenticate
 
     def test_custom_authenticate_with_username(self):
         request = RequestFactory().get(reverse('login'))
-        user = self.authenticate(request, username="test", password='testpass123')
+        user = authenticate(request, username="test", password='testpass123')
         self.assertEqual(user.pk, self.user.pk)
 
     def test_custom_authenticate_with_email(self):
         request = RequestFactory().get(reverse('login'))
-        user = self.authenticate(request, username="test@mail.com", password='testpass123')
+        user = authenticate(request, email="test@mail.com", password='testpass123')
         self.assertEqual(user.pk, self.user.pk)
 
+    def test_custom_authenticate_user_does_not_exists(self):
+        request = RequestFactory().get(reverse('login'))
+        user = authenticate(request, username="not_exists", password='testpass123')
+        self.assertIsNone(user)
+
+    def test_custom_authenticate_uname_password_not_provided(self):
+        request = RequestFactory().get(reverse('login'))
+        user = authenticate(request)
+        self.assertIsNone(user)
