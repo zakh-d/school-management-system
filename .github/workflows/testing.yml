@@ -31,9 +31,7 @@ jobs:
     - name: Coverage Report
       run: |
         pip install coverage
-        coverage run manage.py test
-        coverage report
-        coverage xml
+        coverage run manage.py test && coverage report && coverage xml
     - name: Report Coverage to Codecov
     - uses: codecov/codecov-action@v2
       with:
