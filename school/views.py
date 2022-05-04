@@ -4,14 +4,15 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
+
 from accounts.models import CustomUser
 from school.forms import CreateUpdateClassForm, AddTeacherClassForm
 from school.models import Class
 from school.models import School
+from school.permissions import admin_required
 
 
 # School Views
-from school.permissions import admin_required
 
 
 class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
