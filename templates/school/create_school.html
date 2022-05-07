@@ -6,7 +6,7 @@
     {% csrf_token %}
     <div class="my-3">
         {{ form.name.label_tag }}
-        {% render_field form.name class="form-control" %}
+        {% render_field form.name class="form-control"  %}
     </div>
     <input type="submit" value="Submit" class="btn btn-primary">
 </form>
