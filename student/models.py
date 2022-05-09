@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from school.models import Class, School
+from school.models import Class
 
 
 class Student(models.Model):
