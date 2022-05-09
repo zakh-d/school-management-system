@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # local apps
     'school',
     'accounts',
+    'student',
     # 3rd party apps
     'widget_tweaks',
 ]
@@ -138,3 +139,6 @@ LOGOUT_REDIRECT_URL = reverse_lazy('login')
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
