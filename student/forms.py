@@ -1,10 +1,8 @@
-from django.forms import ModelForm
+from django.forms import forms
+from django.core.validators import FileExtensionValidator
 
-from student.models import StudentExel
 
+class StudentExcelUploadForm(forms.Form):
 
-class StudentExcelUploadForm(ModelForm):
-
-    class Meta:
-        model = StudentExel
-        fields = ('excel_file', )
+    file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx'])],
+                           help_text='Attach .xlsx file', label='File')

@@ -26,9 +26,3 @@ class Student(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
-
-
-class StudentExel(models.Model):
-    excel_file = models.FileField(upload_to='students_excels',
-                                  validators=[FileExtensionValidator(allowed_extensions=['xlsx'])])
-    _class = models.ForeignKey(Class, on_delete=models.CASCADE, name='class', verbose_name='Class')

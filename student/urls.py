@@ -5,5 +5,5 @@ from student.views import UploadStudentsExcelView
 app_name = 'student'
 
 urlpatterns = [
-    path('upload/', UploadStudentsExcelView.as_view(), name='upload'),
+    path('upload/<uuid:class_id>/', UploadStudentsExcelView.as_view(), name='upload'),
 ]
