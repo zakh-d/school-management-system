@@ -1,6 +1,5 @@
 import uuid
 
-from django.core.validators import FileExtensionValidator
 from django.db import models
 from school.models import Class
 
