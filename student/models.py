@@ -11,7 +11,7 @@ class Student(models.Model):
         editable=False)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    origin_class = models.ForeignKey(Class, on_delete=models.CASCADE)
+    origin_class = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='students')
     order_in_class = models.IntegerField()
     email = models.EmailField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)

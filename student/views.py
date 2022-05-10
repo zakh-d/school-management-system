@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -39,13 +40,15 @@ class UploadStudentsExcelView(LoginRequiredMixin, PermissionRequiredMixin, FormV
             email = email if email != 'nan' else None
             phone_number = students_dict['phone_number'].get(i)
             phone_number = phone_number if phone_number != 'nan' else None
-            Student.objects.create(
+            Student.objects.update_or_create(
                 order_in_class=order_in_class,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                phone_number=phone_number,
-                origin_class=origin_class
+                origin_class=origin_class,
+                defaults={
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'email': email,
+                    'phone_number': phone_number
+                }
             )
 
         return super(UploadStudentsExcelView, self).form_valid(form)
