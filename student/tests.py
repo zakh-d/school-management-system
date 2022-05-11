@@ -1,5 +1,9 @@
+from io import BytesIO
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+import pandas as pd
 
 from accounts.models import AdministrationMember, Teacher
 from school.models import School, Class
@@ -90,3 +94,38 @@ class StudentExcelUploadViewTests(TestCase):
         url = reverse('student:upload', kwargs={'class_id': self._class.id})
         response = self.client.get(url)
         self.assertIsInstance(response.context.get('form'), StudentExcelUploadForm)
+
+    def test_upload_invalid_excel(self):
+        self.client.login(username='user', password='testpass123')
+        url = reverse('student:upload', kwargs={'class_id': self._class.id})
+        df = pd.DataFrame({'first_name': ['John'], 'last_name': ['Snow']})
+        content = BytesIO()
+        writer = pd.ExcelWriter(content, engine='xlsxwriter')
+        df.to_excel(writer)
+        writer.save()
+        content.seek(0)
+        invalid_excel = SimpleUploadedFile('invalid.xlsx', content.read())
+        response = self.client.post(url, data={'file': invalid_excel})
+        self.assertContains(response, 'Invalid data in excel file')
+
+    def test_upload_not_excel(self):
+        self.client.login(username='user', password='testpass123')
+        url = reverse('student:upload', kwargs={'class_id': self._class.id})
+        pdf_file = SimpleUploadedFile('file.pdf', b'Some text')
+        response = self.client.post(url, data={'file': pdf_file})
+        self.assertContains(response, 'File extension “pdf” is not allowed. Allowed extensions are: xlsx.')
+
+    def test_upload_correct_excel(self):
+        self.client.login(username='user', password='testpass123')
+        url = reverse('student:upload', kwargs={'class_id': self._class.id})
+        df = pd.DataFrame({'order_in_class': [1], 'first_name': ['John'], 'last_name': ['Snow'], 'email': [None],
+                           'phone_number': [None]})
+        content = BytesIO()
+        writer = pd.ExcelWriter(content, engine='xlsxwriter')
+        df.to_excel(writer)
+        writer.save()
+        content.seek(0)
+        excel = SimpleUploadedFile('invalid.xlsx', content.read())
+        response = self.client.post(url, data={'file': excel})
+        self.assertRedirects(response, self._class.get_absolute_url())
+        self.assertEqual(self._class.students.count(), 1)

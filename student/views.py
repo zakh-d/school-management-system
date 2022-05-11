@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -33,23 +32,27 @@ class UploadStudentsExcelView(LoginRequiredMixin, PermissionRequiredMixin, FormV
         students_dict = df.to_dict()
         origin_class = self.get_object()
         for i in range(len(df)):
-            order_in_class = students_dict['order_in_class'].get(i)
-            first_name = students_dict['first_name'].get(i)
-            last_name = students_dict['last_name'].get(i)
-            email = students_dict['email'].get(i)
-            email = email if email != 'nan' else None
-            phone_number = students_dict['phone_number'].get(i)
-            phone_number = phone_number if phone_number != 'nan' else None
-            Student.objects.update_or_create(
-                order_in_class=order_in_class,
-                origin_class=origin_class,
-                defaults={
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'email': email,
-                    'phone_number': phone_number
-                }
-            )
+            try:
+                order_in_class = students_dict['order_in_class'].get(i)
+                first_name = students_dict['first_name'].get(i)
+                last_name = students_dict['last_name'].get(i)
+                email = students_dict['email'].get(i)
+                email = email if email != 'nan' else None
+                phone_number = students_dict['phone_number'].get(i)
+                phone_number = phone_number if phone_number != 'nan' else None
+                Student.objects.update_or_create(
+                    order_in_class=order_in_class,
+                    origin_class=origin_class,
+                    defaults={
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'email': email,
+                        'phone_number': phone_number
+                    }
+                )
+            except KeyError:
+                form.add_error('file', 'Invalid data in excel file')
+                return super(UploadStudentsExcelView, self).form_invalid(form)
 
         return super(UploadStudentsExcelView, self).form_valid(form)
 
