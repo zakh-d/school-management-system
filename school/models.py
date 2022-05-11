@@ -32,6 +32,9 @@ class Class(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='classes')
     teachers = models.ManyToManyField("accounts.CustomUser", related_name="classes", blank=True)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         unique_together = ("school", "name")
 
