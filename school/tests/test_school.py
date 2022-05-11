@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 from accounts.models import AdministrationMember, CustomUser
-from school.models import School, Class
-from school.views import CreateSchoolView, DashboardView
+from school.models import School
+from school.views import CreateSchoolView
 
 
 class SchoolCreateViewTest(TestCase):
@@ -80,65 +80,19 @@ class UpdateSchoolView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class DashboardViewTest(TestCase):
+class ClassCreateViewTest(TestCase):
 
     def setUp(self):
-        self.school1 = School.objects.create(name='School1')
-        self.school2 = School.objects.create(name='School2')
-        self.classA = Class.objects.create(name='1-A', school=self.school1)
-        self.classB = Class.objects.create(name='1-B', school=self.school1)
-        self.classC = Class.objects.create(name='1-C', school=self.school2)
-        self.classD = Class.objects.create(name='1-D', school=self.school2)
-
-        self.admin = CustomUser.objects.create(
-            first_name='Admin', last_name='Admin',
-            school=self.school1,
-            role=1, username='Admin'
-        )
-        self.admin.set_password('testpass_admin')
-        self.admin.save()
+        self.school = School.objects.create(name='TEST SCHOOL')
         self.teacher = CustomUser.objects.create(
-            first_name='Teacher', last_name='Teacher',
-            school=self.school2,
-            role=0, username='Teacher'
+            first_name='test_user', last_name='test_user',
+            school=self.school, username='test_user'
         )
-        self.teacher.set_password('testpass_teacher')
+        self.teacher.set_password('test_pass')
         self.teacher.save()
 
-        self.AdminWithoutSchool = CustomUser.objects.create(
-            first_name='AdminWithoutSchool', last_name='AdminWithoutSchool',
-            school=None,
-            role=1, username='AdminWithoutSchool'
-        )
-        self.AdminWithoutSchool.set_password('testpass_AdminWithoutSchool')
-        self.AdminWithoutSchool.save()
+    def test_class_create_has_permission(self):
+        self.client.login(username='test_user', password='test_pass')
+        response = self.client.get(reverse('school:dashboard')).context.get('school')
 
-    def test_dashboard_get_view(self):
-        self.client.login(username='Admin', password='testpass_admin')
-        view = resolve('/school/dashboard/')
-
-        self.assertEqual(view.func.__name__, DashboardView.as_view().__name__)
-
-    def test_dashboard_admin_get_context_data(self):
-        self.client.login(username='Admin', password='testpass_admin')
-        response = self.client.get(reverse('school:dashboard'))
-
-        self.assertEqual(response.context['school'], self.school1)
-
-    def test_dashboard_teacher_get_context_data(self):
-        self.client.login(username='Teacher', password='testpass_teacher')
-        self.classC.teachers.add(self.teacher)
-        self.classC.save()
-        self.classD.teachers.add(self.teacher)
-        self.classD.save()
-        response = self.client.get(reverse('school:dashboard'))
-        classes = self.teacher.classes.all()
-
-        self.assertQuerysetEqual(response.context['classes'], classes, ordered=False)
-
-    def test_dashboard_get_context_data_forbidden_with_no_school(self):
-        self.client.login(username='AdminWithoutSchool', password='testpass_AdminWithoutSchool')
-        response = self.client.get(reverse('school:dashboard'))
-
-        self.assertEqual(response.context['school'], None)
-        self.assertEqual(response.status_code, 302)
+        self.assertIsNotNone(response)

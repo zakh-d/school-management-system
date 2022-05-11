@@ -15,7 +15,7 @@
                 <h1><a href="{% url 'school:create_school' %}">Add your school</a></h1>
             {% endif %}
         {% endif %}
-        {% if is_admin %}
+        {% if is_admin and school %}
             <form action="{% url 'school:increase_class' school.id %}" class="float-end" method="POST">
                 {% csrf_token %}
                 <div class="btn-group">
