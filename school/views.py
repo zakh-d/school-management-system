@@ -112,6 +112,7 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(ClassDetailView, self).get_context_data(**kwargs)
         context['is_admin'] = self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
         context['add_teacher_form'] = AddTeacherClassForm(school=self.get_object().school, instance=self.get_object())
+        context['students'] = self.object.students.all()
         return context
 
 

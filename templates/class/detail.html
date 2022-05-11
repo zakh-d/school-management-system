@@ -23,6 +23,32 @@
                     </button>
                 </ul>
             </div>
+            <a href="{% url 'student:upload' class.id %}">Upload Excel</a>
+            <div class="mt-2">
+                <h3>Students</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.order_in_class }}</td>
+                            <td>{{ student.first_name }}</td>
+                            <td>{{ student.last_name }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.phone_number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             </div>
 
