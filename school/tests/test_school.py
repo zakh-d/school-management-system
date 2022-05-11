@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
-from accounts.models import AdministrationMember, CustomUser
+from accounts.models import AdministrationMember
 from school.models import School
 from school.views import CreateSchoolView
 
@@ -78,21 +78,3 @@ class UpdateSchoolView(TestCase):
 
         self.assertTemplateUsed(response, 'school/update_school.html')
         self.assertEqual(response.status_code, 200)
-
-
-class ClassCreateViewTest(TestCase):
-
-    def setUp(self):
-        self.school = School.objects.create(name='TEST SCHOOL')
-        self.teacher = CustomUser.objects.create(
-            first_name='test_user', last_name='test_user',
-            school=self.school, username='test_user'
-        )
-        self.teacher.set_password('test_pass')
-        self.teacher.save()
-
-    def test_class_create_has_permission(self):
-        self.client.login(username='test_user', password='test_pass')
-        response = self.client.get(reverse('school:dashboard')).context.get('school')
-
-        self.assertIsNotNone(response)
