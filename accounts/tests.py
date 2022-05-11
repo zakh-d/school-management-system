@@ -288,7 +288,8 @@ class EmailVerificationTests(TestCase):
         token = generate_token.make_token(self.user)
         url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(self.user.pk)), 'token': token})
         response = self.client.post(url)
-        self.assertContains(response, 'New verification has been sent')
+        self.assertRedirects(response, reverse('login'))
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_resent_verification_already_verified(self):
         token = generate_token.make_token(self.user)
@@ -296,7 +297,8 @@ class EmailVerificationTests(TestCase):
         self.user.save()
         url = reverse('verify', kwargs={'uid64': urlsafe_base64_encode(force_bytes(self.user.pk)), 'token': token})
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 418)
+        self.assertRedirects(response, reverse('login'))
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class CustomUserBackendTests(TestCase):
