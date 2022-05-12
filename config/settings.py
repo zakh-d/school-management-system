@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+
+from django.contrib import messages
 from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -144,3 +146,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
+
+# setting messages tags to use bootstrap classes
+MESSAGE_TAGS = {
+        messages.DEBUG: 'bg-info',
+        messages.INFO: 'bg-primary',
+        messages.SUCCESS: 'bg-primary',
+        messages.WARNING: 'bg-warning',
+        messages.ERROR: 'bg-danger',
+ }
