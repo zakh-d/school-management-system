@@ -86,8 +86,6 @@ class ClassDetailViewTest(TestCase):
 
         self.assertEqual(response.context['user'].role, 1)
 
-
-
     def test_has_no_permission_fake_admin(self):
         self.client.login(username='fakeAdmin', password='testpass_fake_admin')
         response = self.client.get(reverse('school:class_detail', kwargs={'pk': self.test_class.id}))

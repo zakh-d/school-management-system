@@ -86,7 +86,6 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         new_class.school = self.request.user.school
         new_class.save()
         if self.request.user.role == CustomUser.Roles.TEACHER:
-            print(type(self.request.user))
             new_class.add_teachers(self.request.user)
         return super(ClassCreateView, self).form_valid(form)
 
