@@ -19,7 +19,7 @@ class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = School
     fields = ['name']
     template_name = 'school/create.html'
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('school:dashboard')
     login_url = reverse_lazy('login')
 
     def has_permission(self):
@@ -37,7 +37,7 @@ class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = School
     fields = ['name']
     template_name = 'school/update.html'
-    success_url = reverse_lazy('school-list')
+    success_url = reverse_lazy('school:dashboard')
     login_url = reverse_lazy('login')
 
     def has_permission(self):
