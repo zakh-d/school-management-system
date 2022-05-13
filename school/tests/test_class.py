@@ -10,14 +10,12 @@ class ClassCreateViewTest(TestCase):
         self.school = School.objects.create(name='TEST SCHOOL')
         self.teacher = CustomUser.objects.create(
             first_name='test_user', last_name='test_user',
-            username='test_user'
+            username='test_user', school=self.school
         )
         self.teacher.set_password('test_pass')
         self.teacher.save()
 
     def test_class_create_has_permission(self):
-        self.teacher.school = self.school
-        self.teacher.save()
         self.client.login(username='test_user', password='test_pass')
         response = self.client.get(reverse('school:class_create'))
 
@@ -25,8 +23,6 @@ class ClassCreateViewTest(TestCase):
 
     def test_form_kwargs(self):
         self.client.login(username='test_user', password='test_pass')
-        self.teacher.school = self.school
-        self.teacher.save()
 
         response = self.client.get(reverse('school:class_create'))
 
@@ -34,13 +30,17 @@ class ClassCreateViewTest(TestCase):
 
     def test_form_valid(self):
         self.client.login(username='test_user', password='test_pass')
-        self.teacher.school = self.school
-        self.teacher.save()
-        response = self.client.post(reverse('school:class_create'), data={'name': '11-A'})
-        response.school = self.school
-        response.teacher = self.teacher
+        self.client.post(reverse('school:class_create'), data={'name': '11-A'})
 
-        self.assertEqual(response.status_code, 302)
+        _class = Class.objects.last()
+        self.assertEqual(_class.school, self.school)
+        self.assertTrue(self.teacher in _class.teachers.all())
+
+    def test_redirects_after_POST_request(self):
+        self.client.login(username='test_user', password='test_pass')
+        response = self.client.post(reverse('school:class_create'), data={'name': '11-A'})
+        _class = Class.objects.last()
+        self.assertRedirects(response, _class.get_absolute_url())
 
 
 class ClassDetailViewTest(TestCase):
