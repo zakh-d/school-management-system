@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
@@ -86,6 +87,7 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         new_class = form.save(commit=False)
         new_class.school = self.request.user.school
         new_class.save()
+        messages.success(self.request, f'New class {new_class.name} successfully created')
         if self.request.user.role == CustomUser.Roles.TEACHER:
             print(type(self.request.user))
             new_class.add_teachers(self.request.user)
