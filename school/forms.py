@@ -25,7 +25,7 @@ class CreateUpdateClassForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data['name']
         if Class.objects.filter(Q(name=name) & Q(school=self.school)).exists():
-            raise ValidationError("Class " + name + " already exists")
+            self.add_error('name', ValidationError("Class " + name + " already exists"))
         return name
 
 

@@ -4,8 +4,8 @@ from school import views
 app_name = 'school'
 
 urlpatterns = [
-    path('create/', views.CreateSchoolView.as_view(), name='create'),
-    path('update/<uuid:pk>/', views.UpdateSchoolView.as_view(), name='update'),
+    path('create/', views.CreateSchoolView.as_view(), name='create_school'),
+    path('update/<uuid:pk>/', views.UpdateSchoolView.as_view(), name='update_school'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('class/create/', views.ClassCreateView.as_view(), name="class_create"),
     path('class/<uuid:pk>/', views.ClassDetailView.as_view(), name="class_detail"),
