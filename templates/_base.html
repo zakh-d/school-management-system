@@ -22,9 +22,6 @@
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="{% url 'profile' %}">Profile</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                    </li>
                     {% if not user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Login</a>
@@ -40,6 +37,9 @@
                         </ul>
                     </li>
                     {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'school:dashboard' %}">Dashboard</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                     </li>
