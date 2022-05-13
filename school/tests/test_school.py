@@ -17,7 +17,6 @@ class SchoolCreateViewTest(TestCase):
         admin2.save()
         self.url = reverse('school:create_school')
 
-
     def test_school_create_view_get(self):
         self.client.login(username='testuser1', password='testpass123')
         view = resolve('/school/create/')

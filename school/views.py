@@ -4,21 +4,22 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
+
 from accounts.models import CustomUser
 from school.forms import CreateUpdateClassForm, AddTeacherClassForm
 from school.models import Class
 from school.models import School
+from school.permissions import admin_required
 
 
 # School Views
-from school.permissions import admin_required
 
 
 class CreateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = School
     fields = ['name']
     template_name = 'school/create_school.html'
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('school:dashboard')
     login_url = reverse_lazy('login')
 
     def has_permission(self):
@@ -36,7 +37,7 @@ class UpdateSchoolView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = School
     fields = ['name']
     template_name = 'school/update_school.html'
-    success_url = reverse_lazy('school-list')
+    success_url = reverse_lazy('school:dashboard')
     login_url = reverse_lazy('login')
 
     def has_permission(self):
@@ -110,6 +111,7 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(ClassDetailView, self).get_context_data(**kwargs)
         context['is_admin'] = self.request.user.role == CustomUser.Roles.ADMIN_MEMBER
         context['add_teacher_form'] = AddTeacherClassForm(school=self.get_object().school, instance=self.get_object())
+        context['students'] = self.object.students.all()
         return context
 
 
@@ -118,7 +120,7 @@ class ClassDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 def class_add_teacher_handler(request, id):
     _class = Class.get_by_id(id)
     if not _class:
-        return Http404()
+        raise Http404()
     form = AddTeacherClassForm(_class.school, request.POST, instance=_class)
     if form.is_valid():
         form.save()
@@ -130,7 +132,7 @@ def class_add_teacher_handler(request, id):
 def increase_classes_number_handler(request, school_id):
     school = School.get_by_id(school_id)
     if not school:
-        return Http404
+        raise Http404()
     classes = school.classes.all().order_by("-name")
     for _class in classes:
         _class.increase_class_number()

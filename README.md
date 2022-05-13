@@ -1,3 +1,3 @@
 # School Management System
 
-[![Coverage Status](https://coveralls.io/repos/github/zakh-d/school-management-system/badge.svg?branch=dev)](https://coveralls.io/github/zakh-d/school-management-system?branch=dev)
+[![Django Mangement System](https://github.com/zakh-d/school-management-system/actions/workflows/testing.yml/badge.svg)](https://github.com/zakh-d/school-management-system/actions/workflows/testing.yml) [![codecov](https://codecov.io/gh/zakh-d/school-management-system/branch/dev/graph/badge.svg?token=N10KA18VWF)](https://codecov.io/gh/zakh-d/school-management-system)

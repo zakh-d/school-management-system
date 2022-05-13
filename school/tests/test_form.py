@@ -20,4 +20,3 @@ class TestCreateUpdateClassForm(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
         self.assertListEqual(form.errors['name'], ['Class 11-A already exists'])
-

@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_str
@@ -22,6 +22,7 @@ class CustomUserSignUpView(generic.CreateView):
         """Send email after account created"""
         response = super(CustomUserSignUpView, self).form_valid(form)
         send_activation_email(self.object, self.request)
+        messages.add_message(self.request, messages.SUCCESS, 'Email verification was sent')
         return response
 
 
@@ -73,10 +74,13 @@ def verify_email(request, uid64, token):
 
         if not user.email_verified:
             send_activation_email(user, request)
-            return HttpResponse('New verification has been sent')
-        return HttpResponse("Already Verified", status=418)
+            messages.success(request, 'New verification has been sent')
+        else:
+            messages.error(request, 'Already verified')
+        return redirect(reverse('login'))
     if user and generate_token.check_token(user, token):
         user.email_verified = True
+        messages.success(request, 'Email verified successfully')
         user.save()
         return redirect(reverse('login'))
     return render(request, "registration/invalid_verification_token.html")
