@@ -1,7 +1,7 @@
 {% if messages %}
 
     {% for message in messages %}
-        <div id="id_toast" class="toast show align-items-center text-white {{ message.tags }} border-0 position-fixed bottom-0 start-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="id_toast" class="toast show align-items-center text-white {{ message.tags }} border-0 position-fixed bottom-0 start-0 m-3" role="alert" style="z-index: 1111" aria-live="assertive" aria-atomic="true">
           <div class="d-flex">
             <div class="toast-body">
                 {{ message }}

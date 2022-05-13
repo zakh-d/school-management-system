@@ -136,7 +136,10 @@ def increase_classes_number_handler(request, school_id):
     school = School.get_by_id(school_id)
     if not school:
         raise Http404()
+    # TODO: change sorting
+    # the -name working not correct with 9 and 10 for example
     classes = school.classes.all().order_by("-name")
     for _class in classes:
         _class.increase_class_number()
+    messages.success(request, 'All classes\' names updated')
     return redirect(reverse('school:dashboard'))
