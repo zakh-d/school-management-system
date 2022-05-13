@@ -31,23 +31,16 @@ class SchoolCreateViewTest(TestCase):
         self.assertTemplateUsed(response, 'school/create_school.html')
         self.assertEqual(response.status_code, 200)
 
-    def test_school_create_template_forbidden_user_has_school(self):
+    def test_school_create_forbidden_user_has_school(self):
         self.client.login(username='testuser2', password='testpass456', school=self.school)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 403)
 
-    def test_school_create_template_forbidden_unregistred_user(self):
+    def test_school_create_forbidden_unregistred_user(self):
         response = self.client.get(self.url)
 
         self.assertRedirects(response, reverse('login') + '?next=' + self.url)
-
-
-    def test_school_create_view_forbidden_for_user_with_school(self):
-        self.client.login(username='testuser2', password='testpass456')
-        response = self.client.post(self.url, data={'name': 'TEST SCHOOL'})
-
-        self.assertEqual(response.status_code, 403)
 
     def test_school_create_form_valid(self):
         self.client.login(username='testuser1', password='testpass123')
@@ -68,9 +61,9 @@ class UpdateSchoolView(TestCase):
 
     def test_school_update_view(self):
         self.client.login(username='testuser', password='testpass123')
-        view = resolve(self.url).func.view_class
+        view_class = resolve(self.url).func.view_class
 
-        self.assertEqual(view.__name__, UpdateSchoolView.__name__)
+        self.assertEqual(view_class.__name__, UpdateSchoolView.__name__)
 
     def test_school_update_template(self):
         self.client.login(username='testuser', password='testpass123')

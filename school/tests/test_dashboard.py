@@ -67,4 +67,9 @@ class DashboardViewTest(TestCase):
 
         self.assertEqual(response.context['school'], None)
         self.assertEqual(response.status_code, 200)
+
+    def test_template_used(self):
+        self.client.login(username='admin_without_school', password='testpass_admin_without_school')
+        response = self.client.get(reverse('school:dashboard'))
+
         self.assertTemplateUsed(response, 'school/dashboard.html')
