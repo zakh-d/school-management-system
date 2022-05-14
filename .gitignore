@@ -141,3 +141,28 @@ GitHub.sublime-settings
 config/local_settings.py
 
 **/.DS_Store
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/dashboard_frontend/node_modules
+/dashboard_frontend/.pnp
+/dashboard_frontend/.pnp.js
+
+# testing
+/dashboard_frontend/coverage
+
+# production
+/dashboard_frontend/build
+
+# misc
+/dashboard_frontend/.DS_Store
+/dashboard_frontend/.env.local
+/dashboard_frontend/.env.development.local
+/dashboard_frontend/.env.test.local
+/dashboard_frontend/.env.production.local
+
+/dashboard_frontend/npm-debug.log*
+/dashboard_frontend/yarn-debug.log*
+/dashboard_frontend/yarn-error.log*

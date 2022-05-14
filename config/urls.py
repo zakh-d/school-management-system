@@ -17,10 +17,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from school.views import DashboardReactView
 from config import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('dashboard/', DashboardReactView.as_view(), name='dashboard_react'),
     path('accounts/', include('accounts.urls')),
     path('school/', include('school.urls', namespace='school')),
     path('student/', include('student.urls', namespace='student'))
