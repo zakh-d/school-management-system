@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
@@ -86,6 +87,7 @@ class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         new_class = form.save(commit=False)
         new_class.school = self.request.user.school
         new_class.save()
+        messages.success(self.request, f'New class {new_class.name} successfully created')
         if self.request.user.role == CustomUser.Roles.TEACHER:
             new_class.add_teachers(self.request.user)
         return super(ClassCreateView, self).form_valid(form)
@@ -133,7 +135,10 @@ def increase_classes_number_handler(request, school_id):
     school = School.get_by_id(school_id)
     if not school:
         raise Http404()
+    # TODO: change sorting
+    # the -name working not correct with 9 and 10 for example
     classes = school.classes.all().order_by("-name")
     for _class in classes:
         _class.increase_class_number()
+    messages.success(request, 'All classes\' names updated')
     return redirect(reverse('school:dashboard'))
