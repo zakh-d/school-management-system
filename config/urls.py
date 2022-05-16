@@ -25,5 +25,6 @@ urlpatterns = [
     path('dashboard/', DashboardReactView.as_view(), name='dashboard_react'),
     path('accounts/', include('accounts.urls')),
     path('school/', include('school.urls', namespace='school')),
-    path('student/', include('student.urls', namespace='student'))
+    path('student/', include('student.urls', namespace='student')),
+    path('api/v1/', include('apiv1.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

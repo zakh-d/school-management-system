@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'school',
     'accounts',
     'student',
+    'apiv1',
     # 3rd party apps
     'widget_tweaks',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

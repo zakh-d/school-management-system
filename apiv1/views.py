@@ -1,9 +1,10 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import CustomUser
-from apiv1.permissions import HasSchoolPermission
-from apiv1.serializers import ClassSerializer
+from apiv1.permissions import HasSchoolPermission, TeacherBelongsToClassOrIsAdmin
+from apiv1.serializers import ClassSerializer, StudentSerializer, UserSerializer
+from school.models import Class
 
 
 class AvailableClassesListAPIView(ListAPIView):
@@ -16,3 +17,25 @@ class AvailableClassesListAPIView(ListAPIView):
         if user.role == CustomUser.Roles.ADMIN_MEMBER:
             return user.school.classes.all()
         return user.classes.all()
+
+
+class StudentsFromClassAPIView(ListAPIView):
+
+    permission_classes = [IsAuthenticated, TeacherBelongsToClassOrIsAdmin]
+    serializer_class = StudentSerializer
+
+    def get_object(self):
+        return Class.get_by_id(self.kwargs.get('class_id'))
+
+    def get_queryset(self):
+        _class = self.get_object()
+        return _class.students.all().order_by('order_in_class')
+
+
+class MyInfoAPIView(RetrieveAPIView):
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user

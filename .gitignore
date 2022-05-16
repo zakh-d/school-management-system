@@ -153,9 +153,6 @@ config/local_settings.py
 # testing
 /dashboard_frontend/coverage
 
-# production
-/dashboard_frontend/build
-
 # misc
 /dashboard_frontend/.DS_Store
 /dashboard_frontend/.env.local
