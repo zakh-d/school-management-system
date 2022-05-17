@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import CustomUser
-from school.models import Class
+from school.models import Class, School
 from student.models import Student
 
 
@@ -33,3 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_school(self, obj):
         return obj.school.name
+
+
+class SchoolUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = School
+        fields = ('name', )

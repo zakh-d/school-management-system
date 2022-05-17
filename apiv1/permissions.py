@@ -15,3 +15,9 @@ class TeacherBelongsToClassOrIsAdmin(BasePermission):
         if request.user.role == CustomUser.Roles.ADMIN_MEMBER:
             return request.user.school == obj.school
         return request.user in obj.teachers.all()
+
+
+class IsAdmin(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.role == CustomUser.Roles.ADMIN_MEMBER

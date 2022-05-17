@@ -1,9 +1,9 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import CustomUser
-from apiv1.permissions import HasSchoolPermission, TeacherBelongsToClassOrIsAdmin
-from apiv1.serializers import ClassSerializer, StudentSerializer, UserSerializer
+from apiv1.permissions import HasSchoolPermission, TeacherBelongsToClassOrIsAdmin, IsAdmin
+from apiv1.serializers import ClassSerializer, StudentSerializer, UserSerializer, SchoolUpdateSerializer
 from school.models import Class
 
 
@@ -39,3 +39,12 @@ class MyInfoAPIView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class SchoolUpdateAPIView(UpdateAPIView):
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+    serializer_class = SchoolUpdateSerializer
+
+    def get_object(self):
+        return self.request.user.school
