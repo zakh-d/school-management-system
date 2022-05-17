@@ -11,10 +11,11 @@ class HasSchoolPermission(BasePermission):
 
 class TeacherBelongsToClassOrIsAdmin(BasePermission):
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
+        cls = view.get_object()
         if request.user.role == CustomUser.Roles.ADMIN_MEMBER:
-            return request.user.school == obj.school
-        return request.user in obj.teachers.all()
+            return request.user.school == cls.school
+        return request.user in cls.teachers.all()
 
 
 class IsAdmin(BasePermission):

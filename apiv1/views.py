@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,7 +26,7 @@ class StudentsFromClassAPIView(ListAPIView):
     serializer_class = StudentSerializer
 
     def get_object(self):
-        return Class.get_by_id(self.kwargs.get('class_id'))
+        return get_object_or_404(Class, id=self.kwargs.get('class_id'))
 
     def get_queryset(self):
         _class = self.get_object()
