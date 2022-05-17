@@ -38,6 +38,10 @@ class ClassModelTest(TestCase):
         self.class11B = Class.objects.create(name='11-B', school=self.school_B)
 
         self.assertListEqual(
-            list(Class.order_by_name(self.school_B.classes.all())),
+            list(Class.order_by_name(self.school_B.classes.all(), True)),
             [self.class11B, self.class10B, self.class9B]
+        )
+        self.assertListEqual(
+            list(Class.order_by_name(self.school_B.classes.all(), False)),
+            [self.class9B, self.class10B, self.class11B]
         )
