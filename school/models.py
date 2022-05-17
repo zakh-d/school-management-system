@@ -65,6 +65,6 @@ class Class(models.Model):
             return None
 
     @staticmethod
-    def order_by_name(queryset, reverse_qs):
+    def order_by_name(queryset, _reverse=False):
         pattern = r"[0-9]+"
-        return sorted(queryset, key=lambda cls: int(re.search(pattern, cls.name).group(0)), reverse=reverse_qs)
+        return sorted(queryset, key=lambda cls: int(re.search(pattern, cls.name).group(0)), reverse=_reverse)

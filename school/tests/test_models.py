@@ -42,6 +42,6 @@ class ClassModelTest(TestCase):
             [self.class11B, self.class10B, self.class9B]
         )
         self.assertListEqual(
-            list(Class.order_by_name(self.school_B.classes.all(), False)),
+            list(Class.order_by_name(self.school_B.classes.all())),
             [self.class9B, self.class10B, self.class11B]
         )

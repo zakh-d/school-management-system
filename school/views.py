@@ -59,9 +59,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         context['school'] = self.request.user.school
         if self.request.user.role == CustomUser.Roles.ADMIN_MEMBER:
-            context['classes'] = Class.order_by_name(self.request.user.school.classes.all(), False)
+            context['classes'] = Class.order_by_name(self.request.user.school.classes.all())
         if self.request.user.role == CustomUser.Roles.TEACHER:
-            context['classes'] = Class.order_by_name(self.request.user.classes.all(), False)
+            context['classes'] = Class.order_by_name(self.request.user.classes.all())
         return context
 
 
