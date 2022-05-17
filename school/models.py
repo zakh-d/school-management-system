@@ -63,3 +63,8 @@ class Class(models.Model):
             return Class.objects.get(id=id)
         except Class.DoesNotExist:
             return None
+
+    @staticmethod
+    def order_by_name(queryset):
+        pattern = r"[0-9]+"
+        return sorted(queryset, key=lambda cls: int(re.search(pattern, cls.name).group(0)), reverse=True)

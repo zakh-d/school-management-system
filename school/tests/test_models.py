@@ -30,3 +30,14 @@ class ClassModelTest(TestCase):
         self.test_class.increase_class_number()
         self.test_class.refresh_from_db
         self.assertEqual(self.test_class.name, '11-A')
+
+    def test_order_by_name(self):
+        self.school_B = School.objects.create(name='TEST SCHOOL B')
+        self.class9B = Class.objects.create(name='9-B', school=self.school_B)
+        self.class10B = Class.objects.create(name='10-B', school=self.school_B)
+        self.class11B = Class.objects.create(name='11-B', school=self.school_B)
+
+        self.assertListEqual(
+            list(Class.order_by_name(self.school_B.classes.all())),
+            [self.class11B, self.class10B, self.class9B]
+        )
