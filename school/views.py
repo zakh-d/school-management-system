@@ -65,6 +65,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class DashboardReactView(TemplateView):
+
+    template_name = 'index.html'
+
+
 # Class View
 
 class ClassCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
