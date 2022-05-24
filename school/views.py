@@ -59,9 +59,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         context['school'] = self.request.user.school
         if self.request.user.role == CustomUser.Roles.ADMIN_MEMBER:
-            context['classes'] = self.request.user.school.classes.all()
+            context['classes'] = Class.order_by_name(self.request.user.school.classes.all())
         if self.request.user.role == CustomUser.Roles.TEACHER:
-            context['classes'] = self.request.user.classes.all()
+            context['classes'] = Class.order_by_name(self.request.user.classes.all())
         return context
 
 
@@ -142,7 +142,7 @@ def increase_classes_number_handler(request, school_id):
         raise Http404()
     # TODO: change sorting
     # the -name working not correct with 9 and 10 for example
-    classes = school.classes.all().order_by("-name")
+    classes = Class.order_by_name(school.classes.all(), True)
     for _class in classes:
         _class.increase_class_number()
     messages.success(request, 'All classes\' names updated')
